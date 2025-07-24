@@ -1,0 +1,2 @@
+# eshop
+Django Shopping App
