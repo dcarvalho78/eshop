@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db.models import Q
 from .models import Category, Product, Order, OrderItem
 from .forms import ContactForm, OrderCreateForm
-from cart.cart import Cart  # Angenommen, Sie haben einen Warenkorb-Utility
+#from cart.cart import Cart  
 
 def index(request):
     featured_products = Product.objects.filter(available=True, featured=True)[:4]
@@ -36,7 +36,7 @@ def product_list(request, category_slug=None):
         products = products.filter(
             Q(name__icontains=query) | 
             Q(description__icontains=query)
-    
+        )
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
