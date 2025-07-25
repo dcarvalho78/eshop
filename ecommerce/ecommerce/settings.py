@@ -1,19 +1,5 @@
-"""
-Django settings for ecommerce project.
-"""
+# ecommerce/settings.py
 
-from pathlib import Path
-import os  # WICHTIG: Dieses Import fehlte
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Security
-SECRET_KEY = 'django-insecure--%uop0m(w^v&*qgll@pkjs9l6(exvj*thyhcwlwl99w1sr0-be'  # In Produktion ändern!
-DEBUG = True  # In Produktion auf False setzen
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # Für Entwicklung hinzugefügt
-
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -21,30 +7,63 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myapp',  # Ihre App
+    
+    # Third-party apps
+    'parler',
+    
+    # Local apps (nur einmal registrieren!)
+    'myapp.apps.MyappConfig',  # Deine Hauptapp
+    'orders.apps.OrdersConfig',  # Orders App (nur diese Form verwenden)
+    'cart.apps.CartConfig',
+   # 'payments.apps.PaymentsConfig',
+
 ]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+# Sicherstellen, dass alle Apps eindeutige Namen haben
+for app in INSTALLED_APPS:
+    assert INSTALLED_APPS.count(app) == 1, f"Doppelte App gefunden: {app}"
+
+# Parler Einstellungen (für Übersetzungen)
+PARLER_LANGUAGES = {
+    None: (
+        {'code': 'de'},
+        {'code': 'en'},
+    ),
+    'default': {
+        'fallback': 'de',
+        'hide_untranslated': False,
+    }
+}
+
+# Wichtig: Pfade müssen korrekt sein
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Media Files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Static Files
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+# Am besten in settings.py:
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+
+ALLOWED_HOSTS = ['*'] if DEBUG else [
+    'deine-domain.de',
+    'www.deine-domain.de',
+    'localhost',
+    '127.0.0.1'
 ]
-
-ROOT_URLCONF = 'ecommerce.urls'
-
-# TEMPLATES Korrektur (doppelte 'DIRS' entfernt)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Templates-Ordner korrekt eingebunden
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',  # Dieser fehlte
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -52,51 +71,10 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'ecommerce.wsgi.application'
-
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 ]
-
-# Internationalization
-LANGUAGE_CODE = 'de-de'  # Auf Deutsch geändert
-TIME_ZONE = 'Europe/Berlin'  # An Ihre Zeitzone anpassen
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-
-# Static files (Korrektur des Syntaxfehlers)
-STATIC_URL = 'static/'  # Kein führender Schrägstrich
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-# Media files (falls benötigt)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Am Ende der settings.py hinzufügen
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

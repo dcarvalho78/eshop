@@ -1,7 +1,7 @@
 from django import forms
+from .models import Order, ContactMessage
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import ContactMessage, Order, ProductReview
 
 class ContactForm(forms.ModelForm):
     class Meta:
@@ -22,34 +22,8 @@ class ContactForm(forms.ModelForm):
 class OrderCreateForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['first_name', 'last_name', 'email', 'address', 
+        fields = ['first_name', 'last_name', 'email', 'address',
                  'postal_code', 'city', 'payment_method']
-        widgets = {
-            'address': forms.Textarea(attrs={'rows': 3}),
-            'payment_method': forms.RadioSelect(
-                choices=[
-                    ('credit', 'Kreditkarte'),
-                    ('paypal', 'PayPal'),
-                    ('bank', 'Überweisung')
-                ]
-            )
-        }
-
-class ProductReviewForm(forms.ModelForm):
-    class Meta:
-        model = ProductReview
-        fields = ['rating', 'comment']
-        widgets = {
-            'rating': forms.NumberInput(attrs={
-                'min': 1,
-                'max': 5,
-                'class': 'star-rating'
-            }),
-            'comment': forms.Textarea(attrs={
-                'rows': 3,
-                'placeholder': 'Ihre Bewertung...'
-            })
-        }
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)

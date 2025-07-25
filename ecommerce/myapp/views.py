@@ -2,9 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.contrib.auth.models import User  # Neu hinzugefügt
 from .models import Category, Product, Order, OrderItem
-from .forms import ContactForm, OrderCreateForm
-#from cart.cart import Cart  
+from .forms import ContactForm, OrderCreateForm, UserRegistrationForm  # UserRegistrationForm hinzugefügt
+from .cart import Cart
 
 def index(request):
     featured_products = Product.objects.filter(available=True, featured=True)[:4]
